@@ -41,9 +41,10 @@ AUR: https://aur.archlinux.org/packages/python2-pymupdf/
 
 Ubuntu
 ------
-The required MuPDF version in the official Ubuntu repositories is often not timely available, so you need to build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
-
-When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. Visit this Wiki page for a MuPDF installation experience from sources: https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation.
+wget https://mupdf.com/downloads/archive/mupdf-1.11-source.tar.gz
+tar xvf mupdf-1.11-source.tar.gz
+sed -i 's/CFLAGS += -Wall/CFLAGS += -Wall -fPIC/' Makerules
+sudo make HAVE_X11=no HAVE_GLFW=no prefix=/usr/local -j8 install
 
 OSX
 ---
@@ -62,7 +63,7 @@ If you do want to make your own binary however, have a look at this `Wiki page <
 Usage and Documentation
 =========================
 
-Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_, the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs, and the **recipies** section of our Wiki https://github.com/rk700/PyMuPDF/wiki. 
+Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_, the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs, and the **recipies** section of our Wiki https://github.com/rk700/PyMuPDF/wiki.
 
 You have a variety of options to access the **documentation**:
 
