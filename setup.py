@@ -13,8 +13,8 @@ if sys.platform.startswith('linux'):
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
                        libraries=[
                            'mupdf',
-                           'crypto', #openssl is required by mupdf on archlinux
-                           'jbig2dec', 'openjp2', 'jpeg', 'freetype',
+                           #'crypto', #openssl is required by mupdf on archlinux
+                           'jbig2dec', 'openjp2', 'freetype',
                            'mupdfthird',
                            ], # the libraries to link with
                       )
@@ -43,7 +43,7 @@ else:
                        include_dirs=[ # we need the path of the MuPDF's headers
                                      './mupdf/include',
                                      './mupdf/include/mupdf',
-                                     './mupdf/thirdparty/zlib', 
+                                     './mupdf/thirdparty/zlib',
                                     ],
                        libraries=[ # these are needed in Windows
                                   'libmupdf', 'libfonts',

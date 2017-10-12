@@ -37,7 +37,7 @@
 // SWIG macro: throw exceptions.
 //=============================================================================
 %define THROWMSG(msg)
-fz_throw(gctx, FZ_ERROR_GENERIC, msg)
+fz_throw(gctx, FZ_ERROR_GENERIC,"%s", msg)
 %enddef
 //=============================================================================
 
@@ -315,19 +315,19 @@ struct fz_document_s
             fz_catch(gctx) return -1;
 
             v = pdf_array_get(gctx, names, i+1);      // file descriptor
-            
+
             // stream object containing file contents
             stream = pdf_dict_getl(gctx, v, PDF_NAME_EF, PDF_NAME_F, NULL);
-            
+
             pdf_array_delete(gctx, names, i+1);  // delete file descriptor
             pdf_array_delete(gctx, names, i);    // delete name entry
-            
+
             // delete stream object
             pdf_delete_object(gctx, pdf, pdf_to_num(gctx, stream));
-            
+
             // adjust /Limits entry
             if (!limits) return 0;              // no Limits entry existed
-            
+
             // no todo: deleted entry was not contained in Limits
             if ((strcmp(tname, limit1) != 0) && (strcmp(tname, limit2) != 0))
                 return 0;
@@ -379,14 +379,14 @@ struct fz_document_s
 
             // name of file entry
             name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
-            PyDict_SetItemString(infodict, "name", 
+            PyDict_SetItemString(infodict, "name",
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
-            PyDict_SetItemString(infodict, "file", 
+            PyDict_SetItemString(infodict, "file",
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
-            PyDict_SetItemString(infodict, "desc", 
+            PyDict_SetItemString(infodict, "desc",
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
             pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
                                           PDF_NAME_Length, NULL);
@@ -420,7 +420,7 @@ struct fz_document_s
                 if (count < 1) THROWMSG(msg0002);
                 n = FindEmbedded(gctx, id, pdf);
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
-                
+
                 if (f != NULL)
                     {
                         pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
@@ -493,7 +493,7 @@ struct fz_document_s
                     d = name;               // take the name
                     desc_len = name_len;
                 }
-                
+
             if (PyByteArray_Check(buffer))
             {
                 size = (size_t) PyByteArray_Size(buffer);
@@ -527,7 +527,7 @@ struct fz_document_s
                             f, file_len, /* filename */
                             f, file_len, /* unifile */
                             buf);
-                
+
             }
             fz_always(gctx)
             {
@@ -539,7 +539,7 @@ struct fz_document_s
 
         CLOSECHECK(pageCount)
         %pythoncode%{@property%}
-        int pageCount() 
+        int pageCount()
         {
             return fz_count_pages(gctx, $self);
         }
@@ -924,7 +924,7 @@ if sa < 0:
             // preparatory stuff:
             // (1) get underlying pdf document,
             // (2) transform Python list into integer array
-            
+
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int argc;
             fz_try(gctx)
@@ -1286,7 +1286,7 @@ if sa < 0:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx) assert_PDF(pdf);
             fz_catch(gctx) return -2;
-            
+
             pdf_obj *root, *olroot, *ind_obj;
             // get main root
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
@@ -1424,7 +1424,7 @@ if sa < 0:
             return fz_string_from_buffer(gctx, res);
         }
         %pythoncode %{_getXrefString = _getObjectString%}
-        
+
         /*********************************************************************/
         // Get decompressed stream of an object by xref
         // Throws exception if not a stream.
@@ -1511,7 +1511,7 @@ if sa < 0:
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!obj) THROWMSG("xref invalid");
                 if (!pdf_is_stream(gctx, obj)) THROWMSG("object not a stream");
-                
+
                 pdf_dict_put(gctx, obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);
                 res = deflatebuf(gctx, c, (size_t) len);
@@ -1538,7 +1538,7 @@ if sa < 0:
                 new_info = pdf_new_obj_from_str(gctx, pdf, text);
             }
             fz_catch(gctx) return 1;
-            
+
             // replace existing /Info object
             info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info);
             if (info)
@@ -1587,7 +1587,7 @@ if sa < 0:
 
             def __len__(self):
                 return self.pageCount
-            
+
             def _forget_page(self, page):
                 """Remove a page from document page dict."""
                 pid = id(page)
@@ -1600,7 +1600,7 @@ if sa < 0:
                     if page:
                         page._erase()
                 self._page_refs.clear()
-            
+
             def __del__(self):
                 self._reset_page_refs()
                 if getattr(self, "thisown", True):
@@ -1840,7 +1840,7 @@ fannot._erase()
                             pdf_array_push(gctx, new_array, pdf_array_get(gctx, annots_arr, i));
                 }
                 for (i = 0; i < lcount; i++)
-                    {   // extract object sources from Python list 
+                    {   // extract object sources from Python list
                         txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
                         if (PyBytes_Check(txtpy))
                             text = PyBytes_AsString(txtpy);
@@ -2089,7 +2089,7 @@ fannot._erase()
 
                 if (!fonts)       // page has no fonts yet
                     fonts = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-                
+
                 data = fz_lookup_base14_font(gctx, fontname, &size);
                 if (data)              // base 14 font found
                     font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
@@ -2220,7 +2220,7 @@ fannot._erase()
             self.parent = None
             self.thisown = False
             self.number = None
-            
+
         def __del__(self):
             self._erase()
 
@@ -2374,7 +2374,7 @@ struct fz_rect_s
             fz_union_rect($self, r);
             return $self;
         }
-        
+
         %feature("autodoc","Make rectangle finite") normalize;
         struct fz_rect_s *normalize()
         {
@@ -2393,7 +2393,7 @@ struct fz_rect_s
             }
             return $self;
         }
-        
+
         %feature("autodoc","contains") contains;
         PyObject *contains(struct fz_rect_s *r)
         {
@@ -2456,22 +2456,22 @@ struct fz_rect_s
             def top_left(self):
                 """Return the rectangle's top-left point."""
                 return Point(self.x0, self.y0)
-                
+
             @property
             def top_right(self):
                 """Return the rectangle's top-right point."""
                 return Point(self.x1, self.y0)
-                
+
             @property
             def bottom_left(self):
                 """Return the rectangle's bottom-left point."""
                 return Point(self.x0, self.y1)
-            
+
             @property
             def bottom_right(self):
                 """Return the rectangle's bottom-right point."""
                 return Point(self.x1, self.y1)
-                
+
             def __contains__(self, x):
                 if type(x) in (int, float):
                     return x in tuple(self)
@@ -2503,7 +2503,7 @@ struct fz_rect_s
             tr = top_right
             br = bottom_right
             bl = bottom_left
-            
+
         %}
     }
 };
@@ -2561,7 +2561,7 @@ struct fz_irect_s
                 r->x1 = (int) PyInt_AsLong(PySequence_GetItem(list, 2));
                 r->y1 = (int) PyInt_AsLong(PySequence_GetItem(list, 3));
             }
-            fz_catch(gctx) 
+            fz_catch(gctx)
             {
                 free(r);
                 return NULL;
@@ -2618,7 +2618,7 @@ struct fz_irect_s
             }
             return $self;
         }
-        
+
         PyObject *contains(struct fz_rect_s *r)
         {
             fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
@@ -2666,25 +2666,25 @@ struct fz_irect_s
         %pythoncode %{
             def getRect(self):
                 return Rect(self.x0, self.y0, self.x1, self.y1)
-            
+
             rect = property(getRect)
 
             @property
             def top_left(self):
                 return Point(self.x0, self.y0)
-                
+
             @property
             def top_right(self):
                 return Point(self.x1, self.y0)
-                
+
             @property
             def bottom_left(self):
                 return Point(self.x0, self.y1)
-            
+
             @property
             def bottom_right(self):
                 return Point(self.x1, self.y1)
-                
+
             def __contains__(self, x):
                 if type(x) in (int, float):
                     return x in tuple(self)
@@ -2715,7 +2715,7 @@ struct fz_irect_s
             tr = top_right
             br = bottom_right
             bl = bottom_left
-            
+
         %}
     }
 };
@@ -2959,7 +2959,7 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // copy pixmaps 
+        // copy pixmaps
         //----------------------------------------------------------------------
         void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox)
         {
@@ -3237,7 +3237,7 @@ struct DeviceWrapper
                 else
                     dw->device = fz_new_draw_device_with_bbox(gctx, &fz_identity, pm, clip);
             }
-            fz_catch(gctx) return NULL;                
+            fz_catch(gctx) return NULL;
             return dw;
         }
         DeviceWrapper(struct fz_display_list_s *dl) {
@@ -3303,7 +3303,7 @@ struct fz_matrix_s
             fprintf(stderr, "done!\n");
 #endif
         }
-        
+
         //--------------------------------------------------------------------
         // copy constructor
         //--------------------------------------------------------------------
@@ -3320,7 +3320,7 @@ struct fz_matrix_s
             }
             return m;
         }
-        
+
         //--------------------------------------------------------------------
         // create a scale/shear matrix, scale matrix by default
         //--------------------------------------------------------------------
@@ -3330,7 +3330,7 @@ struct fz_matrix_s
             if(shear) return fz_shear(m, sx, sy);
             return fz_scale(m, sx, sy);
         }
-        
+
         //--------------------------------------------------------------------
         // create a matrix by its 6 components
         //--------------------------------------------------------------------
@@ -3625,7 +3625,7 @@ struct fz_point_s
                 f = u[unit][0] / u[unit][1]
                 if type(x) is Point:
                     return abs(self - x) * f
-            
+
                 # from here on, x is a rectangle
                 # as a safeguard, make a finite copy of it
                 r = Rect(x.top_left, x.top_left)
@@ -3651,7 +3651,7 @@ struct fz_point_s
                         return self.distance_to(r.top_left, unit)
                     else:
                         return (r.x0 - self.x) * f
-        
+
             def transform(self, m):
                 _fitz._fz_transform_point(self, m)
                 return self
@@ -3859,7 +3859,7 @@ struct fz_annot_s
             fz_point point;            // point object to work with
             fz_matrix page_ctm;        // page transformation matrix
             pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
-            
+
             if (o)                     // anything found yet?
                 {
                 n = pdf_array_len(gctx, o);
@@ -3918,7 +3918,7 @@ struct fz_annot_s
                 Py_DECREF(fc);
                 return res;                   // not a PDF
             }
-             
+
             PyObject *col_o;
             int i;
             float col;
@@ -4460,7 +4460,7 @@ struct fz_annot_s
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BS);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BE);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_Border);
-            
+
             int i, d;
             // populate new border array
             if (width < 0) width = cur_width;    // no new width: take current
@@ -4469,7 +4469,7 @@ struct fz_annot_s
             pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
             pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
             pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, width));
-            
+
             if (!pydashes) pydashes = pycur_dashes;   // no new dashes: current
             if (!pydashes)
                 {}
@@ -4644,7 +4644,7 @@ struct fz_link_s
                 raise RuntimeError("orphaned object: parent is None")
             if self.parent.parent.isClosed:
                 raise RuntimeError("operation illegal for closed doc")
-            return linkDest(self)        
+            return linkDest(self)
         %}
 
         PARENTCHECK(rect)

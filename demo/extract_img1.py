@@ -11,7 +11,7 @@ import fitz
 import sys, time
 
 assert len(sys.argv) == 2, 'Usage: %s <input file>' % sys.argv[0]
-    
+
 t0 = time.clock()
 doc = fitz.open(sys.argv[1])
 imgcount = 0
